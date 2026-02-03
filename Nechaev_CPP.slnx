@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Nechaev_CPP/Nechaev_CPP.vcxproj" Id="9cf59d0d-d7e6-404c-8eaa-a40a9aef4e87" />
+</Solution>
