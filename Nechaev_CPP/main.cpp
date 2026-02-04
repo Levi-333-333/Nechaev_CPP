@@ -18,29 +18,72 @@ public:
     unsigned int GetMIN_AGE();
     unsigned int GetFingerCounter();
     explicit operator int() const { return counter; }
-    Person& operator--()
+
+    Person& operator--() // Префиксный декримент
     {
         *agePointer -= 1;
         return *this;
     }
-    Person& operator++()
+    Person& operator++() // Префиксный инкримент 
     {
         *agePointer += 1;
         return *this;
     }
-    // Практика 3.
+    Person operator++(int) // Постфиксный инкримент
+    {
+        Person copy{ *this };
+        ++(*this);
+        return copy;
+    }
+    Person operator--(int) // Постфиксный декримент (практика 1)
+    {
+        Person copy{ *this };
+        --(*this);
+        if (this->age < 0) this->age = 0;
+        return copy;
+    } 
+    
+    Person& operator+=(const Person& other) // Присвоение со сложением объекта класса
+    {
+        age += other.age;
+        return *this;
+    }
+    Person& operator+=(const int value) // Присвоение со сложением целого числа
+    {
+        age += value;
+        return *this;
+    }
+    Person& operator+=(const string value) // Присвоение со сложением имени (практика 3)
+    {
+        name += " " + value;
+        return *this;
+    }
+
+    Person& operator-=(const Person& other) // Присвоение с вычитанием объекта класса (практика 2)
+    {
+        age -= other.age;
+        if (this->age < 0) this->age = 0;
+        return *this;
+    }
+    Person& operator-=(const int value) // Присвоение с вычитанием целого числа
+    {
+        age -= value;
+        if (this->age < 0) this->age = 0;
+        return *this;
+    }
+
     Person operator+(const Person& other) const
     {
         int temp = age + other.age;
         return Person{ name, temp, passportData };
     }
-    // Практика 4.
     Person operator-(const Person& other) const
     {
         int temp = age - other.age;
         if (temp < 0) temp = 0;
         return Person{ name, temp, passportData };
     }
+
     bool operator==(const Person& other) const
     {
         if (name == other.name && age == other.age && GetPassportData() == other.GetPassportData()) return true;
@@ -51,7 +94,6 @@ public:
         if (age > other.age) return true;
         else return false;
     }
-    // Практика 2.
     bool operator<(const Person& other) const
     {
         if (age < other.age) return true;
@@ -67,7 +109,6 @@ public:
         if (age <= other.age) return true;
         else return false;
     }
-    // Практика 1.
     bool operator!=(const Person& other) const
     {
         if (!(name == other.name && age == other.age && GetPassportData() == other.GetPassportData())) return true;
@@ -187,15 +228,17 @@ void main()
     setlocale(LC_ALL, "Ru");
 
     Person chelovek1("Leon", 17, "4444 666666");
-    Person chelovek2("Zloy David V Mute.", 17, "0000 000000");
+    Person chelovek2("Zloy David V Mute.", 10, "0000 000000");
     Person chelovek3("alex shopkeeper", 18, "4444 666666");
-
-    cout << chelovek1 << chelovek2 << endl;
-
-    cout << (chelovek1 != chelovek2) << endl;
-    cout << (chelovek1 < chelovek2) << endl;
-    cout << (chelovek1 + chelovek2);
-    cout << (++chelovek1) << endl;
     
-    cout << chelovek1;
+    cout << chelovek1; // age = 17
+
+    chelovek1--;
+    cout << chelovek1; // age = 16
+
+    chelovek1 -= chelovek2;
+    cout << chelovek1; // age = 6
+
+    chelovek1 += "Cool";
+    cout << chelovek1; // name = Leon Cool
 }
