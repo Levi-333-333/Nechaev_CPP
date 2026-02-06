@@ -316,34 +316,38 @@ void Person PersonTemplateTypenames::ChangeBank()
 //    SetEducationLevel<Tid, Tlogin, Tpassword>("Высшее");
 //}
 
-// Шаблонная функция, принимающая одинаковые параметры
-template<typename T> 
-T Sum(T a, T b)
+class Logger
 {
-    return a + b;
-}
-
-template<typename T, typename T1>
-void swap(T& a, T1& b)
-{
-    string z = static_cast<string>(a);
-    string o = static_cast<string>(b);
-
-    string v = z;
-    z = o;
-    o = v;
-}
-
-template<typename T>
-decltype(auto) CountAverage(const T arr[], const unsigned int size)
-{
-    T result{};
-    for (unsigned int i = 0; i < size; i++)
+public:
+    // Для того что бы обратиться к единственному экземпляру класса используется специальная статическая Get-функция
+    static Logger& GetInstance()
     {
-        result += arr[i];
+        static Logger instance; // Экземпляр класса
+        return instance; 
     }
-    return result / size;
-}
+
+    Logger(const Logger&) = delete;
+
+    Logger& operator=(const Logger&) = delete;
+
+    void Log(string message)
+    {
+        cout << "LOG: " << message << endl;
+    }
+private:
+    static inline unsigned int counter = 0;
+    Logger()
+    {
+        counter++;
+        cout << "Экземпляр Логгера был успешно создан! " << counter << endl;
+    }
+
+    ~Logger()
+    {
+        counter--;
+        cout << "Экземпляр Логгера был успешно разобран! " << counter << endl;
+    }
+};
 
 void main() 
 {
@@ -355,11 +359,9 @@ void main()
     Person<int, string, string, string, int> chelovek2{ 0, "Zloy David V Mute.", 10, "0000 000000", 503.32, "Inoagent", 52 };
     Person<double, string, string, int, int> chelovek3{ 36.6, "alex shopkeeper", 18, "4444 666666", 2000.02, 33, 64 };*/
     
-    cout << "Int: " << Sum(5, 5) << endl; // 10
-    cout << "Double: " << Sum(5.5, 5.5) << endl; // 11
-    cout << "String: " << Sum<string>("5", "5") << endl; // 55
-    cout << endl;
-
-    int array[]{ 3, 5, 7, 9, 11, 13 };
-    cout << CountAverage(array, 6);
+    Logger::GetInstance().Log("БУ!");
+    Logger::GetInstance().Log("Испугался? Не бойся");
+    Logger::GetInstance().Log("Я друг");
+    Logger::GetInstance().Log("Я тебя не обижу");
+    cout << "Kakish" << endl;
 }
