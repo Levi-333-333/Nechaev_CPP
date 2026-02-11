@@ -2,20 +2,58 @@
 #include <Windows.h>
 using namespace std;
 
-class Wallet
+class Time
 {
 public:
-	explicit Wallet(unsigned int _money)
+	explicit Time(unsigned int _minutes, unsigned int _hours)
 	{
-		money = _money;
+		minutes = _minutes;
+		hours = _hours;
+
+		while (minutes >= 60)
+		{
+			minutes -= 60;
+			hours++;
+		}
 	}
-	void pay(Wallet wallet)
+
+	int GetMinutes()
 	{
-		cout << "оплата прошла успешно" << endl;
+		return minutes;
+	}
+	int GetHours()
+	{
+		return hours;
+	}
+
+	Time& operator+(const Time other)
+	{
+		minutes += other.minutes;
+		hours += other.hours;
+
+		while (minutes >= 60)
+		{
+			minutes -= 60;
+			hours++;
+		}
+
+		return *this;
+	}
+
+	bool operator==(const Time other)
+	{
+		if (minutes == other.minutes && hours == other.hours) return true;
+		else return false;
 	}
 private:
-	unsigned int money;
+	unsigned int minutes;
+	unsigned int hours;
 };
+
+ostream& operator<<(ostream& stream, Time& time)
+{
+	return stream << time.GetHours() << ":" << time.GetMinutes() << endl;
+}
 
 void main()
 {
@@ -23,8 +61,15 @@ void main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	Wallet wallet1(12);
-	Wallet wallet2(13);
+	Time time1(59, 4);
+	Time time2(23, 1);
+	Time time3(82, 5);
 
-	wallet1.pay(400); // Не сработало. explicit запрещает подобные преобразования
+	cout << time1;
+	cout << time2 << endl;
+
+	time1 + time2;
+	cout << time1 << endl;
+
+	cout << (time1 == time3);
 }
