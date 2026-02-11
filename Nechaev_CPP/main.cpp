@@ -5,7 +5,7 @@ using namespace std;
 class Wallet
 {
 public:
-	Wallet(unsigned int _money)
+	explicit Wallet(unsigned int _money)
 	{
 		money = _money;
 	}
@@ -26,5 +26,5 @@ void main()
 	Wallet wallet1(12);
 	Wallet wallet2(13);
 
-	wallet1.pay(400); // Сработало
+	wallet1.pay(400); // Не сработало. explicit запрещает подобные преобразования
 }
