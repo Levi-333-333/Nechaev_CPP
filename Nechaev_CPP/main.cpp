@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <Windows.h>
 
+#include "HW1202.h"
+
 #define PersonTemplate template<typename Tid, typename Tlogin, typename Tpassword, typename TbankId, typename TsecretWord>
 #define PersonTemplateTypenames <Tid, Tlogin, Tpassword, TbankId, TsecretWord>
 
@@ -359,9 +361,14 @@ void main()
     Person<int, string, string, string, int> chelovek2{ 0, "Zloy David V Mute.", 10, "0000 000000", 503.32, "Inoagent", 52 };
     Person<double, string, string, int, int> chelovek3{ 36.6, "alex shopkeeper", 18, "4444 666666", 2000.02, 33, 64 };*/
     
-    Logger::GetInstance().Log("БУ!");
-    Logger::GetInstance().Log("Испугался? Не бойся");
-    Logger::GetInstance().Log("Я друг");
-    Logger::GetInstance().Log("Я тебя не обижу");
-    cout << "Kakish" << endl;
+    Box box { 4 };
+    Box bigBox(2.88);
+    Box megaBox = "Leon from Brawl Stars";
+
+    cout << box.GetSoderzhimoye() << endl;
+    cout << bigBox.GetSoderzhimoye() << endl;
+    cout << megaBox.GetSoderzhimoye() << endl << endl;
+
+    megaBox.SetSoderzhimoye("15 monet from Brawl Stars");
+    cout << megaBox.GetSoderzhimoye() << endl;
 }
