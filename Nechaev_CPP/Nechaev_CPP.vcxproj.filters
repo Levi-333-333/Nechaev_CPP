@@ -24,12 +24,18 @@
     <ClCompile Include="HW1202.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Person.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HW0702.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="HW1202.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Person.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
