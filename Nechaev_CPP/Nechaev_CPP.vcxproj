@@ -127,15 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HW0702.cpp" />
-    <ClCompile Include="HW1202.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Person.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HW0702.h" />
-    <ClInclude Include="HW1202.h" />
-    <ClInclude Include="Person.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

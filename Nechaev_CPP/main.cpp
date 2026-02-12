@@ -1,6 +1,27 @@
 ﻿#include <Windows.h>
+#include <iostream>
+#include <string>
+using namespace std;
 
-#include "Person.h"
+double Divide(double number1, double number2)
+{
+    double result = number1 / number2;
+
+    if (!number2) // number2 == 0
+    {
+        throw 0; // выкидываем программе исключение типа данных int
+    }
+    if (number2 > number1)
+    {
+        throw string("Знаменатель больше числителя, дубина!");
+    }
+    if (result == 1)
+    {
+        throw 1;
+    }
+    if (result - int(result) == 0.5) throw string("Я не люблю остаток 0.5, поэтому не дам тебе отработать этой функции, тупица");
+    return result;
+}
 
 void main() 
 {
@@ -8,9 +29,25 @@ void main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    Person<string, string, string, string, string> chelovek1{ "brawl stars", "Leon", 17, "4444 666666", 0.91, "T-BankUser333", "абоба" };
-    Person<int, string, string, string, int> chelovek2{ 0, "Zloy David V Mute.", 10, "0000 000000", 503.32, "Inoagent", 52 };
-    Person<double, string, string, int, int> chelovek3{ 36.6, "alex shopkeeper", 18, "4444 666666", 2000.02, 33, 64 };
-    
-    
+    try
+    {
+        cout << Divide(5, 2) << endl;
+    }
+    catch (const string& errorMessage)
+    {
+        cout << "Возникла ошибка, ты дурень: " << errorMessage << endl;
+    }
+    catch (const int intMessage)
+    {
+        if (intMessage == 0) cout << "На 0 дельить нельзя, ты дурень x2:" << intMessage << endl;
+        else if (intMessage == 1) cout << "Ты вписал 2 одинаковых числа, дурень, очевидно х3, что ответ " << intMessage << endl;
+        else cout << "Возникла int-овая ошибка, ты дурень x4:" << intMessage << endl;
+    }
+    cout << "Я работаю дальше!" << endl;
+
+    system("pause");
 }
+//      Практика
+// 1. 
+// 2. 
+// 3. 

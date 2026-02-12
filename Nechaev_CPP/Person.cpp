@@ -157,7 +157,7 @@ Person Person PersonTemplateTypenames::operator++(int) // Постфиксный
     return copy;
 }
 PersonTemplate
-Person& Person PersonTemplateTypenames::operator+=(const Person& other) // Присвоение со сложением объекта класса
+Person& Person PersonTemplateTypenames::operator+=(const Person PersonTemplateTypenames& other) // Присвоение со сложением объекта класса
 {
     age += other.age;
     return *this;
@@ -175,7 +175,7 @@ Person& Person PersonTemplateTypenames::operator+=(const string value) // При
     return *this;
 }
 PersonTemplate
-Person& Person PersonTemplateTypenames::operator-=(const Person& other) // Присвоение с вычитанием объекта класса
+Person& Person PersonTemplateTypenames::operator-=(const Person PersonTemplateTypenames& other) // Присвоение с вычитанием объекта класса
 {
     age -= other.age;
     if (this->age < 0) this->age = 0;
@@ -189,50 +189,50 @@ Person& Person PersonTemplateTypenames::operator-=(const int value) // Прис�
     return *this;
 }
 PersonTemplate
-Person Person PersonTemplateTypenames::operator+(const Person& other) const // Оператор сложения с другим классом
+Person Person PersonTemplateTypenames::operator+(const Person PersonTemplateTypenames& other) const // Оператор сложения с другим классом
 {
     int temp = age + other.age;
     return Person{ name, temp, passportData };
 }
 PersonTemplate
-Person Person PersonTemplateTypenames::operator-(const Person& other) const // Оператор вычитания с другим классом
+Person Person PersonTemplateTypenames::operator-(const Person PersonTemplateTypenames& other) const // Оператор вычитания с другим классом
 {
     int temp = age - other.age;
     if (temp < 0) temp = 0;
     return Person{ name, temp, passportData };
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator==(const Person& other) const // Оператор сравнения равенства с другим классом
+bool Person PersonTemplateTypenames::operator==(const Person PersonTemplateTypenames& other) const // Оператор сравнения равенства с другим классом
 {
     if (name == other.name && age == other.age && GetPassportData() == other.GetPassportData()) return true;
     else return false;
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator!=(const Person& other) const // Оператор сравнения неравенства с другим классом
+bool Person PersonTemplateTypenames::operator!=(const Person PersonTemplateTypenames& other) const // Оператор сравнения неравенства с другим классом
 {
     if (!(name == other.name && age == other.age && GetPassportData() == other.GetPassportData())) return true;
     else return false;
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator>(const Person& other) const // Оператор сравнения больше с другим классом
+bool Person PersonTemplateTypenames::operator>(const Person PersonTemplateTypenames& other) const // Оператор сравнения больше с другим классом
 {
     if (age > other.age) return true;
     else return false;
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator<(const Person& other) const // Оператор сравнения меньше с другим классом
+bool Person PersonTemplateTypenames::operator<(const Person PersonTemplateTypenames& other) const // Оператор сравнения меньше с другим классом
 {
     if (age < other.age) return true;
     else return false;
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator>=(const Person& other) const // Оператор сравнения больше или равенства с другим классом
+bool Person PersonTemplateTypenames::operator>=(const Person PersonTemplateTypenames& other) const // Оператор сравнения больше или равенства с другим классом
 {
     if (age >= other.age) return true;
     else return false;
 }
 PersonTemplate
-bool Person PersonTemplateTypenames::operator<=(const Person& other) const // Оператор сравнения меньше или равенства с другим классом
+bool Person PersonTemplateTypenames::operator<=(const Person PersonTemplateTypenames& other) const // Оператор сравнения меньше или равенства с другим классом
 {
     if (age <= other.age) return true;
     else return false;
