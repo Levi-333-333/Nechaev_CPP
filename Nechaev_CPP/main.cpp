@@ -1,27 +1,74 @@
 ﻿#include <Windows.h>
 #include <iostream>
 #include <string>
+#include <stdexcept>
 using namespace std;
 
-double Divide(double number1, double number2)
+class PersonError : exception
 {
-    double result = number1 / number2;
+public:
+    PersonError(string _message)
+    {
+        message = _message;
+    }
+    const char* what() const override
+    {
+        return message.c_str();
+    }
+private:
+    string message;
+};
 
-    if (!number2) // number2 == 0
+class Person
+{
+public:
+    Person(string _name, int _age)
     {
-        throw 0; // выкидываем программе исключение типа данных int
+        if (_name.length() > 3)
+        {
+            throw std::length_error{ "У тебя слишком длинное имя, недоумок!" };
+        }
+
+        if (!age || age > 120)
+        {
+            throw std::range_error{ "Неверный возраст, ты полуослик и олух!" };
+        }
+
+        name = _name;
+        age = _age;
     }
-    if (number2 > number1)
+    ~Person()
     {
-        throw string("Знаменатель больше числителя, дубина!");
+
     }
-    if (result == 1)
+    void PrintInfo()
     {
-        throw 1;
+        cout << "Имя: " << name << ". Возраст: " << age << endl;
     }
-    if (result - int(result) == 0.5) throw string("Я не люблю остаток 0.5, поэтому не дам тебе отработать этой функции, тупица");
-    return result;
-}
+private:
+    string name;
+    unsigned int age;
+};
+
+//double Divide(double number1, double number2)
+//{
+//    double result = number1 / number2;
+//
+//    if (!number2) // number2 == 0
+//    {
+//        throw 0; // выкидываем программе исключение типа данных int
+//    }
+//    if (number2 > number1)
+//    {
+//        throw string("Знаменатель больше числителя, дубина!");
+//    }
+//    if (result == 1)
+//    {
+//        throw 1;
+//    }
+//    if (result - int(result) == 0.5) throw string("Я не люблю остаток 0.5, поэтому не дам тебе отработать этой функции, тупица");
+//    return result;
+//}
 
 void main() 
 {
@@ -31,23 +78,20 @@ void main()
 
     try
     {
-        cout << Divide(5, 2) << endl;
+        Person chelovek1{ "Leon", 17 };
+        chelovek1.PrintInfo();
+
+        Person chelovek2{ "Leon", 170 };
+        chelovek2.PrintInfo();
     }
-    catch (const string& errorMessage)
+    catch (const std::length_error errorMessage)
     {
-        cout << "Возникла ошибка, ты дурень: " << errorMessage << endl;
+        cout << errorMessage.what() << endl;
     }
-    catch (const int intMessage)
+    catch (const std::range_error errorMessage)
     {
-        if (intMessage == 0) cout << "На 0 дельить нельзя, ты дурень x2:" << intMessage << endl;
-        else if (intMessage == 1) cout << "Ты вписал 2 одинаковых числа, дурень, очевидно х3, что ответ " << intMessage << endl;
-        else cout << "Возникла int-овая ошибка, ты дурень x4:" << intMessage << endl;
+        cout << errorMessage.what() << endl;
     }
-    cout << "Я работаю дальше!" << endl;
 
     system("pause");
 }
-//      Практика
-// 1. 
-// 2. 
-// 3. 
