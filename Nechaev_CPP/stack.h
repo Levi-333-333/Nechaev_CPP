@@ -12,11 +12,11 @@ struct element
 // Добавление элемента в стек
 // Вершина стека изменяется после добавления элемента. Это значит, что параметр stack должен передаваться по ссылке!
 template <typename Telement>
-void push(element<Telement>*& stack, int value);
+void push(element<Telement>*& stack, Telement value);
 
 // Удаление элемента из стека с возвращением хранимого значения
 template <typename Telement>
-bool pop(element<Telement>*& stack, int& value);
+bool pop(element<Telement>*& stack, Telement& value);
 
 // Получение значения самого верхнего элемента в стеке
 // Возвращается константный указатль на поле верхнего элемента в стеке
