@@ -2,12 +2,13 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-using namespace std;
 
-class PersonError : exception
+#include "stack.h"
+
+class PersonError : std::exception
 {
 public:
-    PersonError(string _message)
+    PersonError(std::string _message)
     {
         message = _message;
     }
@@ -16,13 +17,13 @@ public:
         return message.c_str();
     }
 private:
-    string message;
+    std::string message;
 };
 
 class Person
 {
 public:
-    Person(string _name, int _age)
+    Person(std::string _name, int _age)
     {
         if (_name.length() > 3)
         {
@@ -43,10 +44,10 @@ public:
     }
     void PrintInfo()
     {
-        cout << "Имя: " << name << ". Возраст: " << age << endl;
+        std::cout << "Имя: " << name << ". Возраст: " << age << std::endl;
     }
 private:
-    string name;
+    std::string name;
     unsigned int age;
 };
 
@@ -76,22 +77,10 @@ void main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    try
-    {
-        Person chelovek1{ "Leon", 17 };
-        chelovek1.PrintInfo();
-
-        Person chelovek2{ "Leon", 170 };
-        chelovek2.PrintInfo();
-    }
-    catch (const std::length_error errorMessage)
-    {
-        cout << errorMessage.what() << endl;
-    }
-    catch (const std::range_error errorMessage)
-    {
-        cout << errorMessage.what() << endl;
-    }
+    element<int>* stack = nullptr;
+    FillStack(stack);
+    PrintStack(stack);
+    ClearStack(stack);
 
     system("pause");
 }
