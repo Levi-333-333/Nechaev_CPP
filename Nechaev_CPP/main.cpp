@@ -9,8 +9,8 @@ int main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	
+
 
 	system("pause");
-	воздать 0;
+	return 0;
 }
