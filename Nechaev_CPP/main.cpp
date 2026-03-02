@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 #include <Windows.h>
+#include <logger.cpp>
+#include <userovskie\chi-chi-co.cpp>
 
 #define PersonTemplate template<typename Tid, typename Tlogin, typename Tpassword, typename TbankId, typename TsecretWord>
 #define PersonTemplateTypenames <Tid, Tlogin, Tpassword, TbankId, TsecretWord>
@@ -316,39 +318,6 @@ void Person PersonTemplateTypenames::ChangeBank()
 //    SetEducationLevel<Tid, Tlogin, Tpassword>("Высшее");
 //}
 
-class Logger
-{
-public:
-    // Для того что бы обратиться к единственному экземпляру класса используется специальная статическая Get-функция
-    static Logger& GetInstance()
-    {
-        static Logger instance; // Экземпляр класса
-        return instance; 
-    }
-
-    Logger(const Logger&) = delete;
-
-    Logger& operator=(const Logger&) = delete;
-
-    void Log(string message)
-    {
-        cout << "LOG: " << message << endl;
-    }
-private:
-    static inline unsigned int counter = 0;
-    Logger()
-    {
-        counter++;
-        cout << "Экземпляр Логгера был успешно создан! " << counter << endl;
-    }
-
-    ~Logger()
-    {
-        counter--;
-        cout << "Экземпляр Логгера был успешно разобран! " << counter << endl;
-    }
-};
-
 void main() 
 {
     setlocale(LC_ALL, "Ru");
@@ -359,9 +328,9 @@ void main()
     Person<int, string, string, string, int> chelovek2{ 0, "Zloy David V Mute.", 10, "0000 000000", 503.32, "Inoagent", 52 };
     Person<double, string, string, int, int> chelovek3{ 36.6, "alex shopkeeper", 18, "4444 666666", 2000.02, 33, 64 };*/
     
-    Logger::GetInstance().Log("БУ!");
-    Logger::GetInstance().Log("Испугался? Не бойся");
-    Logger::GetInstance().Log("Я друг");
-    Logger::GetInstance().Log("Я тебя не обижу");
-    cout << "Kakish" << endl;
+    while (true)
+    {
+        chichico();
+    }
+    
 }
