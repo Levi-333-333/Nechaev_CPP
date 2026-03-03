@@ -1,110 +1,94 @@
-﻿#include <iostream>
-#include <Windows.h>
-#include <string>
+﻿#include "Ве_крест_крест.h"
+#include <vector>
 
-/// <summary>
-/// Класс, ответственный за реализацию паттерна "шаблон". Позволяет отдать приказ работникам, которые создаются при наследовании этого родительского класса.
-/// </summary>
-class FlowerBoss
+приказ_княжий вель_дробь ПИ = 3.14;
+
+династия Форма
 {
-public:
-	// Шаблонный метод
-	void GiveOrder() const
+народный:
+	Форма()
 	{
-		this->WateringFlowers();
-		this->CollectFlowers();
-		this->PackFlowers();
-		this->SellFlowers();
+		счётчик++;
+		Русь::молвить << "Форма создана." << Русь::прыг_скок;
+	}
+	virtual ~Форма()
+	{
+		счётчик--;
+		Русь::молвить << "Форма разрушена." << Русь::прыг_скок;
 	}
 
-	void RequireOrder() const
+	virtual бестолочь ВзятьСчётчик()
 	{
-		this->RequireWateringFlowers();
-		this->RequireCollectFlowers();
-		this->RequirePackFlowers();
-		this->RequireSellFlowers();
-	}
-protected:
-	void CollectFlowers() const
-	{
-		std::cout << "Цветочный босс говорит собрать цветы" << std::endl;
-	}
-	void SellFlowers() const
-	{
-		std::cout << "Цветочный босс говорит продать цветы" << std::endl;
-	}
-	void WateringFlowers() const
-	{
-		std::cout << "Цветочный босс говорит полить цветы" << std::endl;
-	}
-	void PackFlowers() const
-	{
-		std::cout << "Цветочный босс говорит упаковать цветы" << std::endl;
+		Русь::молвить << "Всего фигур: " << счётчик << ".";
 	}
 
-	virtual void RequireWateringFlowers() const {};
-	virtual void RequireCollectFlowers() const {};
-	virtual void RequirePackFlowers() const {};
-	virtual void RequireSellFlowers() const {};
-
+	virtual вель_дробь ПодсчётПлощади() = 0;
+дружинный:
+	кощей встрой однобокая_целина счётчик;
 };
 
-class PlatonFlower : public FlowerBoss
+династия Окружность : народный Форма
 {
-	void RequireCollectFlowers() const override
+народный:
+	Окружность(вель_дробь радиус)
 	{
-		std::cout << "Платон слушает и повинуется собирать цветы" << std::endl;
+		Русь::молвить << "Форма круга создана." << Русь::прыг_скок;
+		местный->радиус = радиус;
+		счётчик_кругов++;
 	}
-	void RequirePackFlowers() const override
+	~Окружность()
 	{
-		std::cout << "Платон слушает и повинуется упаковать цветы" << std::endl;
+		счётчик_кругов--;
+		Русь::молвить << "Форма круга разрушена." << Русь::прыг_скок;
 	}
+
+	бестолочь ВзятьСчётчик() override
+	{
+		Русь::молвить << "Всего фигур: " << счётчик << ". Окружностей: " << счётчик_кругов << '.';
+	}
+
+	вель_дробь ПодсчётПлощади() override
+	{
+		воздать ПИ * радиус * радиус;
+	}
+царский:
+	вель_дробь радиус;
+	кощей встрой однобокая_целина счётчик_кругов;
 };
 
-class AnotherPlatonFlower : public FlowerBoss
+династия Прямоугольник : народный Форма
 {
-	void RequireWateringFlowers() const override
+народный:
+	Прямоугольник(вель_дробь высь, вель_дробь ширъ)
 	{
-		std::cout << "Другой Платон слушает и повинуется полить цветы" << std::endl;
+		местный->высь = высь;
+		местный->ширъ = ширъ;
 	}
-	void RequirePackFlowers() const override
+
+	вель_дробь ПодсчётПлощади() override
 	{
-		std::cout << "Другой Платон слушает и повинуется упаковать цветы" << std::endl;
+		воздать высь * ширъ;
 	}
+царский:
+	вель_дробь высь;
+	вель_дробь ширъ;
 };
 
-/// <summary>
-/// Функция, которая взаимодействует с паттерном "шаблон", исполняя его одну из главных функций
-/// </summary>
-/// <param name="flowerBoss">Указатель на наследуемый объект шаблона с имплеминтацией</param>
-static void MennageWorker(FlowerBoss* flowerBoss)
+царь_батюшка_главный()
 {
-	flowerBoss->GiveOrder();
-}
-/// <summary>
-/// Функция, которая взаимодействует с паттерном "шаблон", исполняя его одну из главных функций
-/// </summary>
-/// <param name="worker">Указатель на наследуемый объект шаблона с имплеминтацией</param>
-static void WorkersWork(FlowerBoss* worker)
-{
-	worker->RequireOrder();
-}
+	вперёд_славяне;
 
-int main()
-{
-	setlocale(LC_ALL, "Ru");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+	Русь::vector<Форма*> Дружина_фигур = { новь Окружность(осьмушка), новь Прямоугольник(2.3, 7.1), новь Окружность(2.5) };
 
-	PlatonFlower* worker1 = new PlatonFlower;
-	AnotherPlatonFlower* worker2 = new AnotherPlatonFlower;
-	MennageWorker(worker1);
-	WorkersWork(worker1);
-	WorkersWork(worker2);
+	вель_дробь сумма_площадей = ноль;
 
-	delete worker1;
-	delete worker2;
+	для(мерило локоть = ноль; локость < Дружина_фигур.size(); локоть++)
+	{
+		сумма_площадей += Дружина_фигур[локоть]->ПодсчётПлощади();
 
-	system("pause");
-	return 0;
+		коли(локоть == Дружина_фигур.size() - целковый)
+		{
+			Дружина_фигур[локоть]->ВзятьСчётчик();
+		}
+	}
 }
