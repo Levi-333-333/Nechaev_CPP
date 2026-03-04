@@ -1,110 +1,55 @@
-﻿#include <iostream>
-#include <Windows.h>
-#include <string>
+﻿#include "Ве_крест_крест.h"
+#include <vector>
 
-/// <summary>
-/// Класс, ответственный за реализацию паттерна "шаблон". Позволяет отдать приказ работникам, которые создаются при наследовании этого родительского класса.
-/// </summary>
-class FlowerBoss
+династия Деревцо
 {
-public:
-	// Шаблонный метод
-	void GiveOrder() const
-	{
-		this->WateringFlowers();
-		this->CollectFlowers();
-		this->PackFlowers();
-		this->SellFlowers();
-	}
+народный:
+    Деревцо(много_букав вид_деревца, однобокая_целина количество_веток)
+    {
+        местный->вид_деревца = вид_деревца;
+        местный->количество_веток = количество_веток;
 
-	void RequireOrder() const
-	{
-		this->RequireWateringFlowers();
-		this->RequireCollectFlowers();
-		this->RequirePackFlowers();
-		this->RequireSellFlowers();
-	}
-protected:
-	void CollectFlowers() const
-	{
-		std::cout << "Цветочный босс говорит собрать цветы" << std::endl;
-	}
-	void SellFlowers() const
-	{
-		std::cout << "Цветочный босс говорит продать цветы" << std::endl;
-	}
-	void WateringFlowers() const
-	{
-		std::cout << "Цветочный босс говорит полить цветы" << std::endl;
-	}
-	void PackFlowers() const
-	{
-		std::cout << "Цветочный босс говорит упаковать цветы" << std::endl;
-	}
-
-	virtual void RequireWateringFlowers() const {};
-	virtual void RequireCollectFlowers() const {};
-	virtual void RequirePackFlowers() const {};
-	virtual void RequireSellFlowers() const {};
-
+        Русь::молвить << "Деревцо взрощено" << Русь::прыг_скок;
+    }
+    ~Деревцо()
+    {
+        Русь::молвить << "Деревцо срублено" << Русь::прыг_скок;
+    }
+царский:
+    много_букав вид_деревца;
+    однобокая_целина количество_веток;
 };
 
-class PlatonFlower : public FlowerBoss
+династия Лесок
 {
-	void RequireCollectFlowers() const override
-	{
-		std::cout << "Платон слушает и повинуется собирать цветы" << std::endl;
-	}
-	void RequirePackFlowers() const override
-	{
-		std::cout << "Платон слушает и повинуется упаковать цветы" << std::endl;
-	}
+народный:
+    Лесок()
+    {
+        Русь::молвить << "Лесок взрощен" << Русь::прыг_скок;
+    }
+    ~Лесок()
+    {
+        казнь[] лесок;
+        Русь::молвить << "Лесок разрушен" << Русь::прыг_скок;
+    }
+    Деревцо** лесок;
+    кощей встрой однобокая_целина количество_дерв;
 };
-
-class AnotherPlatonFlower : public FlowerBoss
-{
-	void RequireWateringFlowers() const override
-	{
-		std::cout << "Другой Платон слушает и повинуется полить цветы" << std::endl;
-	}
-	void RequirePackFlowers() const override
-	{
-		std::cout << "Другой Платон слушает и повинуется упаковать цветы" << std::endl;
-	}
-};
-
-/// <summary>
-/// Функция, которая взаимодействует с паттерном "шаблон", исполняя его одну из главных функций
-/// </summary>
-/// <param name="flowerBoss">Указатель на наследуемый объект шаблона с имплеминтацией</param>
-static void MennageWorker(FlowerBoss* flowerBoss)
-{
-	flowerBoss->GiveOrder();
-}
-/// <summary>
-/// Функция, которая взаимодействует с паттерном "шаблон", исполняя его одну из главных функций
-/// </summary>
-/// <param name="worker">Указатель на наследуемый объект шаблона с имплеминтацией</param>
-static void WorkersWork(FlowerBoss* worker)
-{
-	worker->RequireOrder();
-}
 
 int main()
 {
-	setlocale(LC_ALL, "Ru");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+    вперёд_славяне;
 
-	PlatonFlower* worker1 = new PlatonFlower;
-	AnotherPlatonFlower* worker2 = new AnotherPlatonFlower;
-	MennageWorker(worker1);
-	WorkersWork(worker1);
-	WorkersWork(worker2);
+    Деревцо* берёзка = новь Деревцо("Берёза", 54);
+    Деревцо* дубок = новь Деревцо("Дуб", 73);
+    Деревцо* ивочка = новь Деревцо("Ивочка", 106);
 
-	delete worker1;
-	delete worker2;
+    Лесок* зелёный_луг = новь Лесок;
+    зелёный_луг->лесок[зелёный_луг->количество_дерв] = берёзка;
+    зелёный_луг->лесок[зелёный_луг->количество_дерв] = дубок;
+    зелёный_луг->лесок[зелёный_луг->количество_дерв] = ивочка;
+    
+    казнь зелёный_луг;
 
-	system("pause");
-	return 0;
+    system("pause");
 }
