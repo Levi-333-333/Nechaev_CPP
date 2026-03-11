@@ -1,83 +1,64 @@
 ﻿#include <iostream>
+#include <vector>
 
-class Light
+class Character
 {
 public:
-    void TurnOn()
+    Character(int health, int strenght)
     {
-        std::cout << "Лампочка включена" << std::endl;
+        this->health = health;
+        this->strenght = strenght;
     }
-    void TurnOff()
-    {
-        std::cout << "Лампочка выключна" << std::endl;
-    }
-private:
-    std::string model;
-};
 
-class Thermostat
-{
-public:
-    void TurnOn()
+    void PrintInfo()
     {
-        std::cout << "Термостат включен" << std::endl;
+        std::cout << "Ваше здоровье: " << health << " Ваша сила: " << strenght << std::endl;
     }
-    void TurnOff()
-    {
-        std::cout << "Термостат выключно" << std::endl;
-    }
-private:
-    std::string model;
-};
 
-class Radio
-{
-public:
-    void TurnOn()
-    {
-        std::cout << "Радио включен" << std::endl;
-    }
-    void TurnOff()
-    {
-        std::cout << "Радио выключно" << std::endl;
-    }
-private:
-    std::string model;
-};
+    int GetHealth() { return health; }
+    void SetHealth(int health) { this->health = health; }
 
-class SmartHome
-{
-public:
-    SmartHome(Light* light, Thermostat* thermostat, Radio* radio)
-    {
-        this->light = light;
-        this->thermostat = thermostat;
-        this->radio = radio;
-    }
-    void TurnOn()
-    {
-        light->TurnOn();
-        thermostat->TurnOn();
-        radio->TurnOn();
-    }
-    void TurnOff()
-    {
-        light->TurnOff();
-        thermostat->TurnOff();
-        radio->TurnOff();
-    }
+    int GetStrenght() { return strenght; }
+    void SetStrenght(int strenght) { this->strenght = strenght; }
 private:
-    Light* light;
-    Thermostat* thermostat;
-    Radio* radio;
+    int health;
+    int strenght;
 };
 
 int main()
 {
     setlocale(LC_ALL, "Ru");
 
-    SmartHome sillyHome(new Light, new Thermostat, new Radio);
+    Character* character = new Character(15, 3);
 
-    sillyHome.TurnOn();
-    sillyHome.TurnOff();
+    auto poisionPoition = [](Character* character) {character->SetHealth(character->GetHealth() - 4); };
+    auto healthPoition = [](Character* character) {character->SetHealth(character->GetHealth() + 4); };
+    auto cursedSword = [](Character* character) {character->SetHealth(character->GetHealth() - 2); character->SetStrenght(character->GetStrenght() + 2); };
+
+    character->PrintInfo();
+    std::cout << std::endl;
+
+    std::cout << "Магазин какащек:\n1. Зелье здоровья\n2. Зелье отравления\n3. Точно не проклятый меч\nВведите порядковый номер предмета: ";
+    int userInput;
+    std::cin >> userInput;
+    std::cout << std::endl;
+
+    switch (userInput)
+    {
+    case 1:
+        poisionPoition(character);
+        character->PrintInfo();
+        break;
+    case 2:
+        healthPoition(character);
+        character->PrintInfo();
+        break;
+    case 3:
+        cursedSword(character);
+        character->PrintInfo();
+        break;
+    default:
+        std::cout << "Ну ты нормально вводить будешь нет?" << std::endl;
+        break;
+    }
 }
