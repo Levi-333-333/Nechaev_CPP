@@ -1,80 +1,88 @@
 ﻿#include <iostream>
-#include <fstream>
-#include <Windows.h>
-#include "queue.h"
+#include <vector>
+#include <stdexcept>
+#include <ctime>
+#include <cstdlib>
+#include <string>
 
-/// Данная программа считывает данные о людях (имя и возраст) из файла и выводит на экран
-/// сначала список лиц трудоспособного возраста, а затем - нетрудоспособного возраста,
-/// сохраняя при этом исходный порядок расположения элементов хранимого в файле списка.
-/// (Трудоспособным в программе считается возраст в диапазоне от 16 до 64 лет включительно).
-/// <summary>
-/// Функция для загрузки данных из файла и формирования очередей
-/// </summary>
-/// <param name="filename">Имя файла, содержащего сведения о людях (их имя и возраст)</param>
-/// <param name="empl">Очередь из лиц трудоспособного возраста</param>
-/// <param name="unempl">Очередь из лиц нетрудоспособного возраста</param>
-void load_data(const char* filename, queue & empl, queue & unempl);
-/// <summary>
-/// Функция вывода данных из очереди
-/// </summary>
-/// <param name="q">Очередь, сведения из которой следуем отобразить на экране</param>
-void show_data(queue & q);
+struct BrokenVendor : public std::exception {
+    const char* what() const noexcept override {
+        return "Автомат взорвался...";
+    }
+};
 
-void main()
+int main()
 {
-		setlocale(LC_ALL, "Rus");
-		SetConsoleCP(1251);
-		SetConsoleOutputCP(1251);
-		// Создаем две очереди для работы с двумя категориями лиц:
-		queue employable;
-		queue unemployable;
-		// Загружаем данные в очереди
-		load_data("data.txt", employable, unemployable);
-		//Выводим список лиц трудоспособного возраста:
-		std::cout << "Лица из первой очереди:\n";
-		show_data(employable);
-		//Выводим список лиц нетрудоспособного возраста:
-		std::cout << "Лица из второй очереди:\n";
-		show_data(unemployable);
-		system("pause");
-}
+    setlocale(LC_ALL, "Ru");
 
-void load_data(const char* filename, queue & empl, queue & unempl)
-{
-		std::ifstream f(filename);
-		if (f.is_open())
-		{
-			int i = 0;
-				//До конца файла
-				while (!f.eof())
-				{
-						char* man = new char[61];
-						//Считываем очередную строку
-						f.getline(man, 61);
-						char* name = new char[50];
-						int age;
-						//Получаем имя и возраст человека в отдельных переменных
-						sscanf_s(man, "%49[^0-9] %d", name, 50, &age);
-						if (i % 2 == 0) //Добавляем в список нетрудоспособных
-							enqueue(unempl, name, age);
-						else //Добавляем с писок трудоспособных
-							enqueue(empl, name, age);
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-						i++;
-				}
-				f.close();
-		}
-}
-void show_data(queue & q)
-{
-		int i = 0;
-		while (q.size > 0)
-		{
-				man m;
-				if (dequeue(q, m))
-				{
-						//Элемент получен, выводим данные
-						std::cout << ++i << ".\t" << m.name << "\tВозраст:" << m.age << "\n";
-				}
-		}
+    const std::vector<std::string> items = { "сода", "боярышник", "кола" };
+    const std::vector<double> rates = { 2.5, 2.0, 3.0 };
+
+    try
+    {
+        double inserted = 0.0;
+        int id = 0;
+
+        std::cout << "Вендинг" << std::endl;
+        for (size_t i = 0; i < items.size(); ++i)
+        {
+            std::cout << (i + 1) << ". " << items[i] << " (" << rates[i] << ")" << std::endl;
+        }
+        std::cout << std::endl;
+
+        std::cout << "Внесите сумму: ";
+        if (!(std::cin >> inserted))
+        {
+            throw std::invalid_argument("Неверный формат денег");
+        }
+
+        std::cout << "Введите номер напитка: ";
+        if (!(std::cin >> id))
+        {
+            throw std::invalid_argument("Неверный ввод выбора");
+        }
+
+        if (id < 1 || id > static_cast<int>(items.size()))
+        {
+            throw std::out_of_range("Такого пункта нет в меню");
+        }
+
+        if (std::rand() % 5 == 0)
+        {
+            throw BrokenVendor();
+        }
+
+        double price = rates[id - 1];
+        if (inserted < price)
+        {
+            throw std::runtime_error("Недостаточно средств");
+        }
+
+        std::cout << "Вы получили: " << items[id - 1] << '\n';
+        std::cout << "Сдача: " << (inserted - price) << '\n';
+    }
+    catch (const std::invalid_argument& ex)
+    {
+        std::cout << "Ошибка ввода: " << ex.what() << '\n';
+    }
+    catch (const std::out_of_range& ex)
+    {
+        std::cout << "Некорректный выбор: " << ex.what() << '\n';
+    }
+    catch (const BrokenVendor& ex)
+    {
+        std::cout << "Аппарат сломан: " << ex.what() << '\n';
+    }
+    catch (const std::runtime_error& ex) \
+    {
+        std::cout << "Ошибка покупки: " << ex.what() << '\n';
+    }
+    catch (...)
+    {
+        std::cout << "Автомат сошел с ума...\n";
+    }
+
+    return 0;
 }
