@@ -133,8 +133,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="queue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="queue.h" />
     <ClInclude Include="Ве_крест_крест.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

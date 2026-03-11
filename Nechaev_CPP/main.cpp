@@ -1,154 +1,80 @@
-﻿#include <string>
-#include <iostream>
-#include <list>
+﻿#include <iostream>
+#include <fstream>
+#include <Windows.h>
+#include "queue.h"
 
-class IObserver // интерфейс для наблюдателя
+/// Данная программа считывает данные о людях (имя и возраст) из файла и выводит на экран
+/// сначала список лиц трудоспособного возраста, а затем - нетрудоспособного возраста,
+/// сохраняя при этом исходный порядок расположения элементов хранимого в файле списка.
+/// (Трудоспособным в программе считается возраст в диапазоне от 16 до 64 лет включительно).
+/// <summary>
+/// Функция для загрузки данных из файла и формирования очередей
+/// </summary>
+/// <param name="filename">Имя файла, содержащего сведения о людях (их имя и возраст)</param>
+/// <param name="empl">Очередь из лиц трудоспособного возраста</param>
+/// <param name="unempl">Очередь из лиц нетрудоспособного возраста</param>
+void load_data(const char* filename, queue & empl, queue & unempl);
+/// <summary>
+/// Функция вывода данных из очереди
+/// </summary>
+/// <param name="q">Очередь, сведения из которой следуем отобразить на экране</param>
+void show_data(queue & q);
+
+void main()
 {
-public:
-    virtual ~IObserver() {};
-    virtual void Update(const std::string& message) = 0; // Функция, обновляющая поступающую информацию наблюдаемому
-};
+		setlocale(LC_ALL, "Rus");
+		SetConsoleCP(1251);
+		SetConsoleOutputCP(1251);
+		// Создаем две очереди для работы с двумя категориями лиц:
+		queue employable;
+		queue unemployable;
+		// Загружаем данные в очереди
+		load_data("data.txt", employable, unemployable);
+		//Выводим список лиц трудоспособного возраста:
+		std::cout << "Лица из первой очереди:\n";
+		show_data(employable);
+		//Выводим список лиц нетрудоспособного возраста:
+		std::cout << "Лица из второй очереди:\n";
+		show_data(unemployable);
+		system("pause");
+}
 
-class ISubject // интерфейс для наблюдамого
+void load_data(const char* filename, queue & empl, queue & unempl)
 {
-public:
-    virtual ~ISubject() {};
-    virtual void Subscribe(IObserver* observer) = 0; // Функция, подписывающая на наблюдателя
-    virtual void UnSubscribe(IObserver* observer) = 0; // Функция, отписывающая от наблюдателя
-    virtual void Notify() = 0; // Уведомить наблюдаемого
-};
+		std::ifstream f(filename);
+		if (f.is_open())
+		{
+			int i = 0;
+				//До конца файла
+				while (!f.eof())
+				{
+						char* man = new char[61];
+						//Считываем очередную строку
+						f.getline(man, 61);
+						char* name = new char[50];
+						int age;
+						//Получаем имя и возраст человека в отдельных переменных
+						sscanf_s(man, "%49[^0-9] %d", name, 50, &age);
+						if (i % 2 == 0) //Добавляем в список нетрудоспособных
+							enqueue(unempl, name, age);
+						else //Добавляем с писок трудоспособных
+							enqueue(empl, name, age);
 
-class Subject : public ISubject
+						i++;
+				}
+				f.close();
+		}
+}
+void show_data(queue & q)
 {
-public:
-    ~Subject()
-    {
-        std::cout << "Наблюдаемый был очищен в памяти" << std::endl;
-    }
-
-    // Методы управления подпиской
-    void Subscribe(IObserver* observer) override
-    {
-        observerList.push_back(observer);
-    }
-
-    void UnSubscribe(IObserver* observer) override
-    {
-        observerList.remove(observer);
-    }
-
-    void Notify() override
-    {
-        // Для того, чтобы определить свою единицу перечисления для такого типа данных, как список, создается итератор, а внего задается начальный объект списка
-        std::list<IObserver*>::iterator iterator = observerList.begin();
-        std::cout << "За объектом наблюдает " << observerList.size() << " наблюдателей" << std::endl;
-        // Пока значение итератора не примет вид последнего объекта из списка
-        while (iterator != observerList.end())
-        {
-            // Вызываем функцию Update у текущего перечисляемого наблюдателя
-            (*iterator)->Update(message);
-            ++iterator; // У объекта итератора перегружен оператор ++
-        }
-    }
-
-    // Функция, при вызове которой задается новое сообщение (новое состояние) для наблюдаемого и происходит автоматическое уведомление наблюдателя через функцию Notify()
-    void CreateMessage(std::string message)
-    {
-        this->message = message;
-        Notify();
-    }
-
-    std::list<IObserver*> GetObserverList()
-    {
-        return observerList;
-    }
-private:
-    std::list<IObserver*> observerList;
-    std::string message;
-};
-
-class Observer : public IObserver
-{
-public:
-    // Конструктор
-    Observer(Subject& _subject, std::string _name, int _answer) : subject(_subject), name(_name), answer(_answer)
-    {
-        // Наблюдаемый в классе наблюдателя подписывается на второго сразу же в конструкторе
-        this->subject.Subscribe(this);
-        couterObservers++;
-        std::cout << "Наблюдатель " << couterObservers << " проинициализирован" << std::endl;
-    }
-    // Деструктор
-    ~Observer()
-    {
-        couterObservers--;
-        std::cout << "Наблюдатель " << name << " был очищен" << std::endl;
-    }
-    // Переопределенная Update
-    void Update(const std::string& message) override
-    {
-        this->message = message;
-        // Наблюдатель должен реагировать на поступаемое изменение
-        std::cout << "У наблюдателя " << name << " появилось новое сообщение от наблюдаемого: " << this->message << std::endl;
-    }
-    // Вспомогательная функция по управлению количеством наблюдаемых
-    void UnsubscribeSubject()
-    {
-        subject.UnSubscribe(this);
-        std::cout << "Наблюдаемый " << name << " был отписан от наблюдателя!" << std::endl;
-    }
-
-    int GetAnswer()
-    {
-        return answer;
-    }
-private:
-    Subject& subject;
-    std::string message;
-    static inline unsigned int couterObservers;
-    std::string name;
-    int answer;
-};
-
-int main()
-{
-    setlocale(LC_ALL, "Ru");
-
-    Subject* subjectLeon = new Subject;
-    Observer* observerGreka = new Observer(*subjectLeon, "Greka", 3);
-    Observer* observerRak = new Observer(*subjectLeon, "Rak", 2);
-    Observer* observerReka = new Observer(*subjectLeon, "Reka", -2);
-
-    int userAnswer = 0;
-
-    subjectLeon->CreateMessage("РЕШИТЬ УРАВНЕНИЕ: (x + 5) - 3 = 0");
-    std::cin >> userAnswer;
-    if (!(userAnswer == observerReka->GetAnswer())) observerReka->UnsubscribeSubject();
-    userAnswer = 0;
-
-    subjectLeon->CreateMessage("РЕШИТЬ УРАВНЕНИЕ: x^2 - 4x + 4 = 0");
-    std::cin >> userAnswer;
-    if (!(userAnswer == observerRak->GetAnswer())) observerRak->UnsubscribeSubject();
-    userAnswer = 0;
-
-    subjectLeon->CreateMessage("РЕШИТЬ УРАВНЕНИЕ: x^2 - 6x + 9 = 0");
-    std::cin >> userAnswer;
-    if (!(userAnswer == observerGreka->GetAnswer())) observerGreka->UnsubscribeSubject();
-    userAnswer = 0;
-
-    if (subjectLeon->GetObserverList().empty())
-    {
-        std::cout << "Ты слишком тупой для этого дерьма. Ты под наблюдением." << std::endl;
-        Observer* observerTwichModer = new Observer(*subjectLeon, "Twich moderator", NULL);
-        observerTwichModer->Update("Теперь я слежу за тобой.");
-
-        delete observerTwichModer;
-    }
-
-    delete observerGreka;
-    delete observerRak;
-    delete observerReka;
-    delete subjectLeon;
-
-    return 0;
+		int i = 0;
+		while (q.size > 0)
+		{
+				man m;
+				if (dequeue(q, m))
+				{
+						//Элемент получен, выводим данные
+						std::cout << ++i << ".\t" << m.name << "\tВозраст:" << m.age << "\n";
+				}
+		}
 }
