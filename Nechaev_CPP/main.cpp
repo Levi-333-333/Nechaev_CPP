@@ -31,7 +31,7 @@ public:
     }
     // Контекст позволяет изменять состояние объекта с помощью этой функции
     void TransitionToState(State* state)
-    {
+    void Subscribe(IObserver* observer) override
         std::cout << "Происходит смена контекста на другое состояние " << typeid(*state).name() << std::endl;
         // Если присутствует состояние у контекста, очищаем память указателя на состояние и задаем новое
         if (this->state != nullptr)
@@ -119,6 +119,7 @@ void DodgeState::DoSomething2()
 
     this->context->TransitionToState(new SpellState);
 }
+};
 
 int main()
 {
@@ -147,11 +148,10 @@ int main()
             {
                 player->Request1();
                 player->Request2();
-
                 goblin_boblin->Request1();
                 goblin_boblin->Request2();
             }   
-
+    Observer* observerRak = new Observer(*subjectLeon, "Rak", 2);
             delete player;
             delete goblin_boblin;
             break;
@@ -163,11 +163,11 @@ int main()
             {
                 player->Request1();
                 player->Request2();
-
+    if (!(userAnswer == observerReka->GetAnswer())) observerReka->UnsubscribeSubject();
                 goblin_boblin->Request1();
                 goblin_boblin->Request2();
             }
-
+    if (!(userAnswer == observerRak->GetAnswer())) observerRak->UnsubscribeSubject();
             delete player;
             delete goblin_boblin;
             break;
@@ -194,5 +194,7 @@ int main()
     } while (!(1 <= userChoise <= 3));
 
     system("pause");
+    return 0;
+
     return 0;
 }
