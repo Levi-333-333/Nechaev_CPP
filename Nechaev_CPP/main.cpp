@@ -1,69 +1,108 @@
 ﻿#include <string>
-#include <Windows.h>
-#include <iostream>
-#include <thread>
-#include <mutex>
+#include <list>
 #include <vector>
-#include <chrono>
-#include <future>
+#include <map>
+#include <iostream>
+#include <Windows.h>
 
-using namespace std::chrono_literals;
-
-std::mutex mainMutex;
-std::vector<std::exception_ptr> exceptionsArray;
-
-unsigned int i = 0;
-
-void ThrowException()
+class Creature
 {
-	i++;
-	char message[] = {'Л', 'у', 'д', 'к', 'а', ' ', char(i)};
-	throw std::exception(message);
-}
+public:
+	Creature(std::string name, std::list<std::string> gens)
+	{
+		this->name = name;
+		this->gens = gens;
+	}
+	void AddChild(Creature* newChild)
+	{
+		this->children.push_back(newChild);
+	}
 
-// Функция, которая обрабатывает исключения параллельно
-void AsyncLudovolk1()
+	std::string GetName()
+	{
+		return name;
+	}
+	std::list<std::string> GetGens()
+	{
+		return gens;
+	}
+	std::vector<Creature*> GetChildren()
+	{
+		return children;
+	}
+	
+private:
+	std::string name;
+	std::list<std::string> gens;
+	std::vector<Creature*> children;
+};
+
+class GenTree
 {
-	std::this_thread::sleep_for(3s);
+public:
+	static inline unsigned int id = 0;
 
-	try
+	void AddCreature(std::string name, std::list<std::string> gens)
 	{
-		ThrowException();
+		registr.emplace(id, new Creature(name, gens));
+		id++;
 	}
-	catch (const std::exception& mutexException)
+	void ConnectParentWithChild(std::string parentName, std::string childName)
 	{
-		std::lock_guard<std::mutex> lock(mainMutex);
-		exceptionsArray.push_back(std::current_exception());
-	}
-}
-void AsyncLudovolk2()
-{
-	std::this_thread::sleep_for(6s);
+		unsigned int parentId;
+		Creature* paretn;
+		Creature* child{ NULL, };
 
-	try
-	{
-		ThrowException();
-	}
-	catch (const std::exception& mutexException)
-	{
-		std::lock_guard<std::mutex> lock(mainMutex);
-		exceptionsArray.push_back(std::current_exception());
-	}
-}
-void AsyncLudovolk3()
-{
-	std::this_thread::sleep_for(1s);
+		for (auto i = registr.begin(); i != registr.end(); i++)
+		{
+			if (i->second->GetName() == parentName)
+			{
+				parentId = i->first;
+				paretn = i->second;
+			}
+		}
+		for (auto i = registr.begin(); i != registr.end(); i++)
+		{
+			if (i->second->GetName() == childName)
+			{
+				child = i->second;
+			}
+		}
 
-	try
-	{
-		ThrowException();
+		registr[parentId]->AddChild(child);
 	}
-	catch (const std::exception& mutexException)
+	void PrintGetnTreeInfo()
 	{
-		std::lock_guard<std::mutex> lock(mainMutex);
-		exceptionsArray.push_back(std::current_exception());
+		for (auto i = registr.begin(); i != registr.end(); i++)
+		{
+			std::cout << "Существо " << i->first << ": " << i->second->GetName() << ". Его гены: ";
+			for (auto j = i->second->GetGens().begin(); j != i->second->GetGens().end(); j++)
+			{
+				if (j == i->second->GetGens().begin()) std::cout << *j;
+				else std::cout << ", " << *j;
+			}
+			std::cout << ". ";
+			if (i->second->GetChildren().empty()) std::cout << "У него (неё) нет детей.";
+			else
+			{
+				std::cout << "Его (её) дети: ";
+				for (int j = 0; j < i->second->GetChildren().size(); j++)
+				{
+					if (i->second->GetChildren()[j] == i->second->GetChildren()[0]) std::cout << i->second->GetChildren()[j];
+					else std::cout << ", " << i->second->GetChildren()[j];
+				}
+			}
+
+			std::cout << std::endl << std::endl;
+		}
 	}
-}
+	~GenTree()
+	{
+		registr.clear();
+	}
+private:
+	std::map<unsigned int, Creature*> registr;
+};
 
 int main()
 {
@@ -71,53 +110,15 @@ int main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	// future - планирование процесса асинхронного объекта async
-	// Создается объект планирования процесса, в который помещается асинхронный объект с указанием протокола запуска и функции
-	std::future<void> plannedProcess1 = std::async(std::launch::async, AsyncLudovolk1);
-	std::future<void> plannedProcess2 = std::async(std::launch::async, AsyncLudovolk2);
-	std::future<void> plannedProcess3 = std::async(std::launch::async, AsyncLudovolk3);
-
-	// Симуляция работы основного потока
-	for (int i = 0; i < 5; i++)
-	{
-		std::lock_guard<std::mutex> mainLock(mainMutex);
-		if (exceptionsArray.empty()) std::cout << "Поток main работает, загрузка файлов идёт..." << std::endl;
-		else std::cout << "Поток main работает, какие-то файлы загрузились!" << std::endl;
-
-		std::this_thread::sleep_for(3s);
-	}
-
-	std::cout << "Работа main завершена. Фоновые процессы все еще выполняются" << std::endl;
-
-	std::this_thread::sleep_for(3s);
-
-	std::lock_guard<std::mutex> mainLock(mainMutex);
-	for (auto& exception : exceptionsArray)
-	{
-		try
-		{
-			if (exception != nullptr)
-			{
-				std::rethrow_exception(exception);
-			}
-		}
-		catch (const std::exception& mutexException)
-		{
-			std::cout << "Загрузка файла " << mutexException.what() << " завершена!" << std::endl;
-		}
-	}
-	std::cout << "Общее время выполнения: 6 секунд" << std::endl;
-
-	if (exceptionsArray.empty())
-	{
-		std::cout << "После ожидания исключений все еще нет :(" << std::endl;
-	}
+	GenTree* genTree = new GenTree();
+	genTree->AddCreature("Юми", { "Лучший сапорт", "Хилочка-вардилочка" });
+	genTree->AddCreature("Ниса", { "Шотландская-веслоухая", "Коричневая" });
+	genTree->AddCreature("Тамья", { "Шотландская-веслоухая", "Светлая с чёрными полосками" });
+	genTree->ConnectParentWithChild("Юми", "Ниса");
+	genTree->ConnectParentWithChild("Юми", "Тамья");
+	genTree->PrintGetnTreeInfo();
+	delete genTree;
 
 	system("pause");
+	return 0;
 }
-
-//		Практика
-// С помощью асинхронного выполнения в данной программе просимулировать использование заклинание замедления врага в битве:
-// У игрока есть два действия: просто атаковать, применить заклинание замедления
-// При получении ввода о действии при атаке происходит вывод информации в консоль, что игрок атаковал врага, а при замедлении написать, что замедлил
-// После действия игрока действует враг. У врага вызывается асинхронная функция, где внутри проверяется флаг использовал ли игрок замедление. Если использовал, то заставлять врага атаковать через 3 секунды.
