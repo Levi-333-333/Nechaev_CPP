@@ -1,78 +1,123 @@
 ﻿#include <string>
 #include <Windows.h>
 #include <iostream>
+#include <thread>
+#include <mutex>
+#include <vector>
+#include <chrono>
+#include <future>
 
-// Класс с чистыми виртуальными функциями (интерфейс). Определяет поведение, которое изменяется с помощью декоратора
-class Component
-{
-public:
-    virtual ~Component() {}
-    virtual std::string DoSomething() = 0;
-};
+using namespace std::chrono_literals;
 
-// Класс, реализующий поведение по умолчанию. У этого класса может быть несколько вариаций
-class Player : public Component
-{
-public:
-    std::string DoSomething() override
-    {
-        return "Игрок бьёт оружием";
-    }
-};
+std::mutex mainMutex;
+std::vector<std::exception_ptr> exceptionsArray;
 
-// Следует тому же интерфейсу, что и другие компоненты. Определяет обертку для всех конкретных декораторов
-class Decorator : public Component
-{
-public:
-    Decorator(Component* component)
-    {
-        this->component = component;
-    }
-    std::string DoSomething() override
-    {
-        return component->DoSomething();
-    }
-protected:
-    Component* component;
-};
+unsigned int i = 0;
 
-// Конкретные декораторы вызывают обернутый объект и изменяют его результат.
-// Декораторы могут вызывать родительскую реализацию операции, вместо того, чтобы вызвать обернутый объект напрямую
-class CoolSword : public Decorator
+void ThrowException()
 {
-public:
-    CoolSword(Component* component) : Decorator(component) {}
-    std::string DoSomething() override
-    {
-        // При наследовании обращение к родителю идет через оператор области видимости, поскольку поля с объектом класса в текущем классе нет.
-        return "Используя крутой меч: " + Decorator::DoSomething();
-    }
-};
+	i++;
+	char message[] = {'Л', 'у', 'д', 'к', 'а', ' ', char(i)};
+	throw std::exception(message);
+}
 
-// Функция, работающая  со всеми объектами, использующая интерфейс компонента.Функция независима от конкретных классов компонентов с которыми работает
-void PlayerTurn(Component* component)
+// Функция, которая обрабатывает исключения параллельно
+void AsyncLudovolk1()
 {
-    std::cout << "Ваше действие: " << component->DoSomething();
+	std::this_thread::sleep_for(3s);
+
+	try
+	{
+		ThrowException();
+	}
+	catch (const std::exception& mutexException)
+	{
+		std::lock_guard<std::mutex> lock(mainMutex);
+		exceptionsArray.push_back(std::current_exception());
+	}
+}
+void AsyncLudovolk2()
+{
+	std::this_thread::sleep_for(6s);
+
+	try
+	{
+		ThrowException();
+	}
+	catch (const std::exception& mutexException)
+	{
+		std::lock_guard<std::mutex> lock(mainMutex);
+		exceptionsArray.push_back(std::current_exception());
+	}
+}
+void AsyncLudovolk3()
+{
+	std::this_thread::sleep_for(1s);
+
+	try
+	{
+		ThrowException();
+	}
+	catch (const std::exception& mutexException)
+	{
+		std::lock_guard<std::mutex> lock(mainMutex);
+		exceptionsArray.push_back(std::current_exception());
+	}
 }
 
 int main()
 {
-    setlocale(LC_ALL, "Ru");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
+	setlocale(LC_ALL, "Ru");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 
-    // Поддержка простых компонентов:
-    Component* componentA = new Player;
-    PlayerTurn(componentA);
-    std::cout << std::endl << "==================" << std::endl;
+	// future - планирование процесса асинхронного объекта async
+	// Создается объект планирования процесса, в который помещается асинхронный объект с указанием протокола запуска и функции
+	std::future<void> plannedProcess1 = std::async(std::launch::async, AsyncLudovolk1);
+	std::future<void> plannedProcess2 = std::async(std::launch::async, AsyncLudovolk2);
+	std::future<void> plannedProcess3 = std::async(std::launch::async, AsyncLudovolk3);
 
-    // Поддержка декоративных компонентов:
-    Component* decoratorA = new CoolSword(componentA);
-    PlayerTurn(decoratorA);
-    std::cout << std::endl << "==================" << std::endl;
+	// Симуляция работы основного потока
+	for (int i = 0; i < 5; i++)
+	{
+		std::lock_guard<std::mutex> mainLock(mainMutex);
+		if (exceptionsArray.empty()) std::cout << "Поток main работает, загрузка файлов идёт..." << std::endl;
+		else std::cout << "Поток main работает, какие-то файлы загрузились!" << std::endl;
 
-    delete componentA;
-    delete decoratorA;
+		std::this_thread::sleep_for(3s);
+	}
 
-    system("pause");
+	std::cout << "Работа main завершена. Фоновые процессы все еще выполняются" << std::endl;
+
+	std::this_thread::sleep_for(3s);
+
+	std::lock_guard<std::mutex> mainLock(mainMutex);
+	for (auto& exception : exceptionsArray)
+	{
+		try
+		{
+			if (exception != nullptr)
+			{
+				std::rethrow_exception(exception);
+			}
+		}
+		catch (const std::exception& mutexException)
+		{
+			std::cout << "Загрузка файла " << mutexException.what() << " завершена!" << std::endl;
+		}
+	}
+	std::cout << "Общее время выполнения: 6 секунд" << std::endl;
+
+	if (exceptionsArray.empty())
+	{
+		std::cout << "После ожидания исключений все еще нет :(" << std::endl;
+	}
+
+	system("pause");
 }
+
+//		Практика
+// С помощью асинхронного выполнения в данной программе просимулировать использование заклинание замедления врага в битве:
+// У игрока есть два действия: просто атаковать, применить заклинание замедления
+// При получении ввода о действии при атаке происходит вывод информации в консоль, что игрок атаковал врага, а при замедлении написать, что замедлил
+// После действия игрока действует враг. У врага вызывается асинхронная функция, где внутри проверяется флаг использовал ли игрок замедление. Если использовал, то заставлять врага атаковать через 3 секунды.
