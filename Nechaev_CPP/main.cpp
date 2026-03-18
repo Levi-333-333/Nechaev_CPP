@@ -22,9 +22,9 @@ public:
 	{
 		return name;
 	}
-	std::list<std::string> GetGens()
+	std::list<std::string>* GetGens()
 	{
-		return gens;
+		return &gens;
 	}
 	std::vector<Creature*> GetChildren()
 	{
