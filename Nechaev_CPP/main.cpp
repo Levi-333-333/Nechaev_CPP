@@ -76,12 +76,14 @@ public:
 		for (auto i = registr.begin(); i != registr.end(); i++)
 		{
 			std::cout << "Существо " << i->first << ": " << i->second->GetName() << ". Его гены: ";
+			// Ужас...
 			for (auto j = i->second->GetGens().begin(); j != i->second->GetGens().end(); j++)
 			{
 				if (j == i->second->GetGens().begin()) std::cout << *j;
 				else std::cout << ", " << *j;
 			}
 			std::cout << ". ";
+			// ...ужас всё
 			if (i->second->GetChildren().empty()) std::cout << "У него (неё) нет детей.";
 			else
 			{
