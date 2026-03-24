@@ -11,26 +11,22 @@ int main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	unsigned int n { 5 };
-	std::unique_ptr<int[]> pointerToArray{ std::make_unique<int[]>(n) };
+	std::shared_ptr<std::string> stringPointer; // nullptr
+	// Способ инициализации с помощью спец. функции make_shared<T>(), пердназначенной для этого
+	std::shared_ptr<float> floatPointer = { std::make_shared<float>(36.6) };
 
-	for (int i = 0; i < n; i++)
-	{
-		pointerToArray[i] = (i + 1) * 3;
-	}
+	std::cout << stringPointer << std::endl; // 0000000
+	std::cout << floatPointer << std::endl; // Ячейка памяти
+	std::cout << *floatPointer << std::endl; // 36.6
+	// У share_ptr есть функция, возвращающая кол-во объектов, на которые они ссылаются
+	std::cout << floatPointer.use_count() << std::endl; // 1
 
-	for (int i = 0; i < n; i++)
-	{
-		std::cout << pointerToArray[i] << ", ";
-	}
-
-	pointerToArray.reset();
+	// Создание указателя на массив (доступно только с С++ 20)
+	std::shared_ptr<int[]> intArrayPointer = { std::make_shared<int[]>(10) };
+	for (int i = 0; i < 10; i++) intArrayPointer[i] = i * 2;
+	for (int i = 0; i < 10; i++) std::cout << intArrayPointer[i] << ", "; // 0, 2, 4, 6, 8, 10, 12, 14, 16, 18
+	std::cout << std::endl;
 
 	system("pause");
 	return 0;
 }
-//      Практика
-// 1. Необходимо создать уникальный указатель, который бы указывал на массив целочисленных беззнкаовых значений.
-// 2. В цикле данный массив заполнить любым способом.
-// 3. Вывести значения каждого из элементов в цикле.
-// 4. В конце высвободить память для уникального указателя.
