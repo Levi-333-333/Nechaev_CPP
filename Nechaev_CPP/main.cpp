@@ -76,9 +76,9 @@ public:
 		for (auto i = registr.begin(); i != registr.end(); i++)
 		{
 			std::cout << "Существо " << i->first << ": " << i->second->GetName() << ". Его гены: ";
-			for (auto j = i->second->GetGens().begin(); j != i->second->GetGens().end(); j++)
+			for (auto j = i->second->GetGens()->begin(); j != i->second->GetGens()->end(); j++)
 			{
-				if (j == i->second->GetGens().begin()) std::cout << *j;
+				if (j == i->second->GetGens()->begin()) std::cout << *j;
 				else std::cout << ", " << *j;
 			}
 			std::cout << ". ";
@@ -88,8 +88,8 @@ public:
 				std::cout << "Его (её) дети: ";
 				for (int j = 0; j < i->second->GetChildren().size(); j++)
 				{
-					if (i->second->GetChildren()[j] == i->second->GetChildren()[0]) std::cout << i->second->GetChildren()[j];
-					else std::cout << ", " << i->second->GetChildren()[j];
+					if (i->second->GetChildren()[j] == i->second->GetChildren()[0]) std::cout << i->second->GetChildren()[j]->GetName();
+					else std::cout << ", " << i->second->GetChildren()[j]->GetName();
 				}
 			}
 
