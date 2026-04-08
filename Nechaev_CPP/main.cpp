@@ -1,32 +1,71 @@
-﻿#include <string>
-#include <list>
-#include <vector>
-#include <map>
+﻿#include <Windows.h>
 #include <iostream>
-#include <Windows.h>
+
+class IntArray
+{
+public:
+    IntArray(int size) : data{ new int[size] } { std::cout << "Выделение памяти под объект" << std::endl; }
+    ~IntArray()
+    {
+        std::cout << "Очищение памяти объекта." << std::endl;
+        delete[] data;
+    }
+    // --------- Удаление конструктора копирования и оператора присваивания
+    // Важно, чтобы ресурс освобождался только один раз. Для этого в классе удаляем конструктор копирования и оператор присваивания, что позволяет избежать ситуации, при которой два объекта могут хранить указатель на одну и ту же  область памяти и затем в деструкторе пытаться освободить эту память.
+    IntArray(IntArray& other) = delete;
+    IntArray& operator=(IntArray& other) = delete;
+
+    // Переопределение оператора индексирования для доступа к элементам динамического массива
+    int& operator[](unsigned int index)
+    {
+        return data[index];
+    }
+
+    // Функция по очистке ресурса для объекта и передача ресурса другому объекту
+    int* ReleaseData()
+    {
+        int* otherData = data; // Указатель на место памяти, на которое указываете data
+        data = nullptr;
+        return otherData;
+    }
+private:
+    int* data;
+};
 
 int main()
 {
-	setlocale(LC_ALL, "Ru");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+    setlocale(LC_ALL, "Ru");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
 
-	std::shared_ptr<std::string> stringPointer; // nullptr
-	// Способ инициализации с помощью спец. функции make_shared<T>(), пердназначенной для этого
-	std::shared_ptr<float> floatPointer = { std::make_shared<float>(36.6) };
+    int n = { 5 };
+    IntArray array = { n };
 
-	std::cout << stringPointer << std::endl; // 0000000
-	std::cout << floatPointer << std::endl; // Ячейка памяти
-	std::cout << *floatPointer << std::endl; // 36.6
-	// У share_ptr есть функция, возвращающая кол-во объектов, на которые они ссылаются
-	std::cout << floatPointer.use_count() << std::endl; // 1
+    for (int i = 0; i < n; ++i)
+    {
+        array[i] = i * 2;
+    }
 
-	// Создание указателя на массив (доступно только с С++ 20)
-	std::shared_ptr<int[]> intArrayPointer = { std::make_shared<int[]>(10) };
-	for (int i = 0; i < 10; i++) intArrayPointer[i] = i * 2;
-	for (int i = 0; i < 10; i++) std::cout << intArrayPointer[i] << ", "; // 0, 2, 4, 6, 8, 10, 12, 14, 16, 18
-	std::cout << std::endl;
+    int* otherData = array.ReleaseData();
 
-	system("pause");
-	return 0;
+    for (int i = 0; i < n; ++i)
+    {
+        std::cout << otherData[i] << std::endl;
+    }
+
+    std::cout << otherData << std::endl;
+    delete[] otherData;
+    otherData = new int(5);
+    IntArray otherArray = { *otherData };
 }
+
+//      RAII - resource acquisition is initialization
+// Это идиома, которая предполагает, что получение ресурса производится при инициализации объекта, а освобождение производится в деструкторе объекта.
+// В отличие от управляемых языков (например, C#, Python, JavaScript), С++ не имеет автоматической сборки мусора. Программа, написанная на языке С++, отвечает за возврат всех ресрусов в операционную систему. Неиспользуемый ресурс называется утечкой. 
+
+// Утечка ресурсов недоступна другим программам до тех пор, пока процесс не завершится!!!
+
+// Современный С++ избегает использования памяти кучи как можно больше, объявляя объекты в стеке. Если ресурс слишком велик для стека, он должен принадлежать объекту. По мере инициализации объекта он получает принадлежащий ему ресурс.Затем объект отвечает за освобождение ресурса в деструкторе. Сам объект владельцев объявляется в стеке. Принцип, в котором объекты имеют собственные ресурсы, называются RAII.
+
+//      Практика
+// 1. После того, как происходит очистка памяти на которую указывает указатель с помощью оператора delete[], попытаться проинициализировать эту память заново новым целочисленным динамическим массивом.
