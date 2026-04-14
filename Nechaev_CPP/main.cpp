@@ -33,9 +33,9 @@ class Sparrow : public Bird
 
 int main()
 {
-	setlocale(LC_ALL, "Ru");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+    setlocale(LC_ALL, "Ru");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
 
 	std::vector<std::unique_ptr<Brid>> birdsArray;
 	birdsArray.push_back(std::make_unique<Sparrow>());
