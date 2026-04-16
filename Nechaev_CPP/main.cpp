@@ -2,29 +2,31 @@
 #include <Windows.h>
 #include <vector>
 
-class Person
+class BankManager;
+class BankAccount
 {
 public:
-    virtual ~Person() {}
-    virtual void CheckPassport() = 0;
+    friend BankManager;
+    BankAccount(std::string name, int money)
+    {
+        this->name = name;
+        this->money = money;
+    }
+private:
+    std::string name;
+    int money;
 };
-class MigrantFromBangladesh : public Person
+class BankManager
 {
 public:
-    void CheckPassport() override
+    friend BankAccount;
+    bool FPS(BankAccount* account1, BankAccount* account2, int amount) // Fast Payment System
     {
-        std::cout << "Пасспортные данные не верны." << std::endl;
-    }
-    void Run()
-    {
-        std::cout << "Тупой мигрант пытается убежать! Растрел!!" << std::endl;
-    }
-};
-class Moscouich : public Person
-{
-    void CheckPassport() override
-    {
-        std::cout << "Пасспортные данные верны." << std::endl;
+        if (account1->money < amount) return false;
+        account1->money -= amount;
+        account2 += amount;
+        std::cout << "Перевод из аккаунта пользователя " << account1->name << " аккаунту пользователя " << account2->name << " прошло успешно!" << std::endl;
+        return true;
     }
 };
 
@@ -34,19 +36,12 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    std::vector<std::unique_ptr<Person>> airport { std::make_unique<MigrantFromBangladesh>(), std::make_unique<Moscouich>() };
-    
-    for (int i = 0; i < airport.size(); ++i)
-    {
+    BankManager admin = {};
+    BankAccount* user1 = new BankAccount("Kirill", 53);
+    BankAccount* user2 = new BankAccount("Flopa", 28);
 
-        airport[i]->CheckPassport();
-        if (MigrantFromBangladesh* temp = dynamic_cast<MigrantFromBangladesh*>(airport[i].get())) temp->Run();
-    }
-
-    for (int i = 0; i < airport.size(); ++i)
-    {
-        airport[i].reset();
-    }
+    admin.FPS(user1, user2, 1);
+    std::cout << "ахахаххахахаха 52 52 52 ахахахах" << std::endl;
 
 	return 0;
 }
