@@ -2,33 +2,30 @@
 #include <Windows.h>
 #include <vector>
 
-class Bird
+class Person
 {
 public:
-	virtual ~Bird(){}
-	virtual std::string MakeSound() const = 0;
+    virtual ~Person() {}
+    virtual void CheckPassport() = 0;
 };
-class Pigeon : public Bird
+class MigrantFromBangladesh : public Person
 {
 public:
-	std::string MakeSound() const override
-	{
-		return "Уруру";
-	}
+    void CheckPassport() override
+    {
+        std::cout << "Пасспортные данные не верны." << std::endl;
+    }
+    void Run()
+    {
+        std::cout << "Тупой мигрант пытается убежать! Растрел!!" << std::endl;
+    }
 };
-class Seagull : public Bird
+class Moscouich : public Person
 {
-	std::string MakeSound() const override
-	{
-		return "А-а-а";
-	}
-};
-class Sparrow : public Bird
-{
-	std::string MakeSound() const override
-	{
-		return "Чик-чирик";
-	}
+    void CheckPassport() override
+    {
+        std::cout << "Пасспортные данные верны." << std::endl;
+    }
 };
 
 int main()
@@ -37,15 +34,19 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-	std::vector<std::unique_ptr<Brid>> birdsArray;
-	birdsArray.push_back(std::make_unique<Sparrow>());
-	birdsArray.push_back(std::make_unique<Seagull>());
-	birdsArray.push_back(std::make_unique<Pigeon>());
+    std::vector<std::unique_ptr<Person>> airport { std::make_unique<MigrantFromBangladesh>(), std::make_unique<Moscouich>() };
+    
+    for (int i = 0; i < airport.size(); ++i)
+    {
 
-	for (auto& bird : birdsArray)
-	{
-		std::cout << bird.MakeSound();
-	}
+        airport[i]->CheckPassport();
+        if (MigrantFromBangladesh* temp = dynamic_cast<MigrantFromBangladesh*>(airport[i].get())) temp->Run();
+    }
+
+    for (int i = 0; i < airport.size(); ++i)
+    {
+        airport[i].reset();
+    }
 
 	return 0;
 }
